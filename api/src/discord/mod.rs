@@ -46,7 +46,9 @@ pub(crate) async fn init(db: DatabaseConnection) -> anyhow::Result<InteractionHa
 
     handler.add_global_command("reload", reload_commands);
     commands::register_commands(&mut handler);
-    update_global_commands(&mut handler, app_id).await?;
+    if let Err(e) = update_global_commands(&mut handler, app_id).await {
+        log::error!("{}", e);
+    }
 
     Ok(handler)
 }
