@@ -1,0 +1,21 @@
+# git
+.gitignore
+.gitmodules
+.gitattributes
+
+# GitHub Actions
+.github/
+
+# env files
+.env
+.env.*
+*.env
+
+# Rust
+**/target/
+
+# Misc
+README.md
+.data/
+.tmp/
+docker-compose*
