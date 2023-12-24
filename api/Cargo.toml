@@ -1,0 +1,24 @@
+[package]
+name = "mc_link_api"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.76"
+dotenvy = "0.15.7"
+entity = { path = "../entity" }
+migration = { path = "../migration" }
+sea-orm = { version = "0.12.10", features = ["sqlx-postgres", "runtime-tokio-rustls"] }
+tokio = { version = "1.35.1", features = ["full"] }
+log = "0.4.20"
+actix-web = "4.4.0"
+serde = { version = "1.0.193", features = ["derive"] }
+serde_json = "1.0.108"
+serde_with = { version = "3.4.0", features = ["macros"] }
+listenfd = "1.0.1"
+rusty_interaction = { version = "0.2.3", features = ["handler", "extended-handler"], path = "../rusty-interaction" }
+env_logger = { version = "0.10.1", features = [] }
+reqwest = "0.11.23"
+uuid = { version = "1.6.1", features = ["v4"] }

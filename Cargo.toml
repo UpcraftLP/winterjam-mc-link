@@ -1,0 +1,18 @@
+[package]
+name = "winterjam-mc-link"
+version = "0.1.0"
+edition = "2021"
+authors = ["Up <up@upcraft.dev>"]
+
+[workspace]
+members = [
+    ".",
+    "entity",
+    "migration",
+    "api"
+]
+
+[dependencies]
+mc_link_api = { path = "./api" }
+tokio = { version = "1.35.1", features = ["full"] }
+anyhow = "1.0.76"

@@ -1,0 +1,11 @@
+services:
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: winterjam
+      POSTGRES_PASSWORD: 493005d5-ca1d-48c9-b19b-039cf5797506
+      POSTGRES_DB: winterjam-mc-link
+    volumes:
+      - ./.data/postgres:/var/lib/postgresql/data

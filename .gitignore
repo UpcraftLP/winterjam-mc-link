@@ -1,0 +1,12 @@
+# Cargo
+/target
+
+# Editors
+.idea/
+
+# Misc
+.data/
+.tmp/
+*.env
+!.env.example
+
