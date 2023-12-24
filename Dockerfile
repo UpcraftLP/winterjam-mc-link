@@ -28,6 +28,7 @@ RUN apt update \
     && apt install -y \
     libssl-dev \
     pkg-config \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /build/target/x86_64-unknown-linux-gnu/release/winterjam-mc-link .
