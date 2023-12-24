@@ -19,7 +19,7 @@ COPY . .
 
 RUN cargo build --target x86_64-unknown-linux-gnu --release
 
-FROM gcr.io/distroless/base-nossl AS runtime
+FROM gcr.io/distroless/base AS runtime
 
 WORKDIR /app
 
