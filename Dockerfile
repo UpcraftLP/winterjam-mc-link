@@ -24,6 +24,12 @@ FROM debian:12.4-slim AS runtime
 
 WORKDIR /app
 
+RUN apt update \
+    && apt install -y \
+    libssl-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /build/target/x86_64-unknown-linux-gnu/release/winterjam-mc-link .
 
 EXPOSE 3000
