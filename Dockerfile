@@ -19,7 +19,8 @@ COPY . .
 
 RUN cargo build --target x86_64-unknown-linux-gnu --release
 
-FROM gcr.io/distroless/base AS runtime
+#FROM gcr.io/distroless/base AS runtime
+FROM debian:bookwork-20231218-slim AS runtime
 
 WORKDIR /app
 
