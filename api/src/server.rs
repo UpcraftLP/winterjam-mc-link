@@ -41,8 +41,8 @@ pub async fn server_main(db: DatabaseConnection) -> anyhow::Result<()> {
     server = match listen_fd.take_tcp_listener(0)? {
         Some(listener) => server.listen(listener)?,
         None => server
-            .bind((Ipv4Addr::UNSPECIFIED, 3000))?
-            .bind((Ipv6Addr::UNSPECIFIED, 3000))?,
+            //TODO listen on ipv6 as well
+            .bind((Ipv4Addr::UNSPECIFIED, 3000))?,
     };
 
     server.run().await?;
