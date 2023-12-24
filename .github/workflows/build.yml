@@ -1,0 +1,93 @@
+name: Build Status
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - README.md
+      - .github/**
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    strategy:
+        matrix:
+            platform:
+              - os_name: Linux-x64
+                os: ubuntu-latest
+                target: x86_64-unknown-linux-gnu
+                cross: false
+                cargo_cmd: cargo
+              - os_name: Linux-x64
+                os: ubuntu-latest
+                target: x86_64-unknown-linux-musl
+                cross: false
+                cargo_cmd: cargo
+              - os_name: FreeBSD-x64
+                os: ubuntu-latest
+                target: x86_64-unknown-freebsd
+                cross: true
+                cargo_cmd: cross
+              - os_name: Linux-arm64
+                os: ubuntu-latest
+                target: aarch64-unknown-linux-gnu
+                cross: true
+                cargo_cmd: cross
+              - os_name: Windows-x64
+                os: windows-latest
+                target: x86_64-pc-windows-msvc
+                cross: false
+                cargo_cmd: cargo
+              - os_name: Windows-arm64
+                os: windows-latest
+                target: aarch64-pc-windows-msvc
+                cross: false
+                cargo_cmd: cargo
+
+    name: Build ${{ matrix.platform.os_name }} ${{ matrix.platform.target }}
+    continue-on-error: true
+    runs-on: ${{ matrix.platform.os }}
+    steps:
+      - name: Get SHA
+        id: get-sha
+        run: |
+          echo "GITHUB_SHA_SHORT=${GITHUB_SHA::7}" >> $GITHUB_ENV
+          echo "SHA_SHORT=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Install toolchain if not cross-compiling
+        if: ${{ !matrix.platform.cross }}
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform.target }}
+      - name: Install musl-tools on Linux
+        if: contains(matrix.platform.os, 'ubuntu') && !matrix.platform.cross
+        run: |
+          sudo apt update
+          sudo apt install -y \
+          musl-tools
+
+      - name: Install cross if cross-compiling
+        if: matrix.platform.cross
+        run: |
+          cargo install cross
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+      - name: Build
+        run: ${{ matrix.platform.cargo_cmd }} build --locked --release --target ${{ matrix.platform.target }} --bin winterjam-mc-link
+        env:
+          CARGO_PKG_VERSION: ${{ github.sha_short }}+build.${{ github.run_number }}
+      - name: Test
+        run: cargo test --all-features --locked --release --target ${{ matrix.platform.target }}
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: winterjam-mc-link-${{ matrix.platform.os_name }}-${{ steps.get-sha.outputs.SHA_SHORT }}+build.${{ github.run_number }}
+          path: |
+            target/${{ matrix.platform.target }}/release/winterjam-mc-link
+            target/${{ matrix.platform.target }}/release/winterjam-mc-link.*
+            !target/${{ matrix.platform.target }}/release/winterjam-mc-link.d
