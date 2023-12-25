@@ -4195,6 +4195,8 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "mc_link_api",
+ "reqwest",
+ "serde",
  "tokio",
 ]
 
