@@ -3,7 +3,7 @@ use serde::Deserialize;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
 
-    let expected_version = env!("CARGO_PKG_VERSION");
+    let expected_version = option_env!("VERSION").unwrap_or("unknown");
 
     let resp = reqwest::get("http://localhost:3000/_health").await?
         .json::<HealthCheckResponse>().await?;

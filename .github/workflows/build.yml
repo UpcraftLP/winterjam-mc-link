@@ -80,7 +80,7 @@ jobs:
       - name: Build
         run: ${{ matrix.platform.cargo_cmd }} build --locked --release --target ${{ matrix.platform.target }} --bin winterjam-mc-link
         env:
-          CARGO_PKG_VERSION: ${{ github.sha_short }}+build.${{ github.run_number }}
+          VERSION: ${{ github.sha_short }}+build.${{ github.run_number }}
       - name: Test
         run: cargo test --all-features --locked --release --target ${{ matrix.platform.target }}
       - name: Upload Artifacts
