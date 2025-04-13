@@ -21,6 +21,12 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object DiscordGuilds : ULongIdTable("discord_guilds") {
 	val createdAt = timestamp("created_at").defaultExpression(CurrentTimestamp)
 	val updatedAt = timestamp("updated_at").defaultExpression(CurrentTimestamp)
+
+	init {
+	    transaction {
+			SchemaUtils.create(DiscordGuilds)
+		}
+	}
 }
 
 object DiscordUsers : ULongIdTable("discord_users") {
