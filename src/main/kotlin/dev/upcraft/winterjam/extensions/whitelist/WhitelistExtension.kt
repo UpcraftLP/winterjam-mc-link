@@ -3,6 +3,8 @@ package dev.upcraft.winterjam.extensions.whitelist
 import dev.kord.common.Color
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.behavior.channel.createMessage
+import dev.kord.core.behavior.getChannelOfOrNull
+import dev.kord.core.entity.channel.GuildMessageChannel
 import dev.kord.core.event.guild.BanAddEvent
 import dev.kord.core.event.guild.MemberLeaveEvent
 import dev.kord.rest.builder.message.embed
@@ -15,6 +17,7 @@ import dev.kordex.core.extensions.Extension
 import dev.kordex.core.extensions.ephemeralSlashCommand
 import dev.kordex.core.extensions.event
 import dev.kordex.core.i18n.withContext
+import dev.kordex.core.utils.envOf
 import dev.kordex.core.utils.scheduling.Scheduler
 import dev.upcraft.winterjam.i18n.Translations
 import dev.upcraft.winterjam.model.DiscordUserRepository
@@ -40,6 +43,8 @@ class WhitelistExtension : Extension() {
 	private val playerDbService by inject<PlayerDbService>()
 
 	private val scheduler = Scheduler()
+
+	private val notificationChannelId: Snowflake = envOf<Snowflake>("WHITELIST_NOTIFICATION_CHANNEL")
 
 	override suspend fun setup() {
 		PlayerDbService.init()
@@ -82,38 +87,40 @@ class WhitelistExtension : Extension() {
 						return@action
 					}
 
-					event.interaction.channel.createMessage {
-						embed {
-							title = Translations.Commands.Whitelist.Add.Embed.title
-								.withContext(this@action)
-								.translateNamed(
-									"user" to user.mention,
-									"minecraft_username" to minecraftUsername,
-									"minecraft_uuid" to minecraftUuid,
-								)
-							description = Translations.Commands.Whitelist.Add.Embed.text
-								.withContext(this@action)
-								.translateNamed(
-									"user" to user.mention,
-									"minecraft_username" to minecraftUsername,
-									"minecraft_uuid" to minecraftUuid,
-								)
-							footer {
-								text = Translations.Commands.Whitelist.Add.Embed.footer
+					guild!!.getChannelOfOrNull<GuildMessageChannel>(notificationChannelId)?.apply {
+						createMessage {
+							embed {
+								title = Translations.Commands.Whitelist.Add.Embed.title
 									.withContext(this@action)
 									.translateNamed(
 										"user" to user.mention,
 										"minecraft_username" to minecraftUsername,
 										"minecraft_uuid" to minecraftUuid,
 									)
-							}
-							playerInfo.avatarUrl?.let {
-								thumbnail {
-									url = it
+								description = Translations.Commands.Whitelist.Add.Embed.text
+									.withContext(this@action)
+									.translateNamed(
+										"user" to user.mention,
+										"minecraft_username" to minecraftUsername,
+										"minecraft_uuid" to minecraftUuid,
+									)
+								footer {
+									text = Translations.Commands.Whitelist.Add.Embed.footer
+										.withContext(this@action)
+										.translateNamed(
+											"user" to user.mention,
+											"minecraft_username" to minecraftUsername,
+											"minecraft_uuid" to minecraftUuid,
+										)
 								}
+								playerInfo.avatarUrl?.let {
+									thumbnail {
+										url = it
+									}
+								}
+								color = Color(0x32a852)
+								timestamp = Clock.System.now()
 							}
-							color = Color(0x32a852)
-							timestamp = Clock.System.now()
 						}
 					}
 
