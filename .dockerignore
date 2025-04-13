@@ -9,10 +9,8 @@
 # env files
 .env
 .env.*
-*.env
-
-# Rust
-**/target/
+# Kordex
+/data/
 
 # Misc
 README.md

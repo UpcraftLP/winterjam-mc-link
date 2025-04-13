@@ -1,41 +1,28 @@
-FROM rust:1.74.1 AS build
+# escape=\
+# syntax=docker/dockerfile:1
 
-WORKDIR /build
+ARG JAVA_VERSION=21
+FROM eclipse-temurin:${JAVA_VERSION}-jdk-alpine
 
-RUN apt update \
-    && apt install -y \
-    musl-dev \
-    libssl-dev \
-    pkg-config \
-    && rm -rf /var/lib/apt/lists/*
+# needed for the healthcheck json parsing
+RUN apk add --no-cache \
+	curl \
+    jq
 
-# statically link against openssl
-ENV OPENSSL_STATIC=1
+WORKDIR /bot
 
-ARG VERSION
-ENV VERSION=${VERSION:-dev}
+VOLUME [ "/bot/data" ]
+VOLUME [ "/bot/plugins" ]
 
-COPY . .
+EXPOSE 3000/tcp
 
-RUN cargo build --target x86_64-unknown-linux-gnu --release --bins
+COPY [ "docker/healthcheck.sh", "/bot/healthcheck.sh" ]
+RUN ["chmod", "+x", "/bot/healthcheck.sh"]
 
-#FROM gcr.io/distroless/base AS runtime
-FROM debian:12.4-slim AS runtime
+HEALTHCHECK --start-period=30s --start-interval=3s --interval=30s --timeout=5s --retries=3 \
+	CMD [ "/bot/healthcheck.sh" ]
 
-WORKDIR /app
+COPY [ "build/install/Winterjam-MC-Link", "." ]
+RUN ["chmod", "+x", "/bot/bin/Winterjam-MC-Link"]
 
-RUN apt update \
-    && apt install -y \
-    libssl-dev \
-    pkg-config \
-    ca-certificates \
-    && rm -rf /var/lib/apt/lists/*
-
-COPY --from=build /build/target/x86_64-unknown-linux-gnu/release/winterjam-mc-link .
-COPY --from=build /build/target/x86_64-unknown-linux-gnu/release/healthcheck .
-
-EXPOSE 3000
-
-HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 CMD ["/app/healthcheck"]
-
-ENTRYPOINT ["/app/winterjam-mc-link"]
+ENTRYPOINT [ "/bot/bin/Winterjam-MC-Link" ]

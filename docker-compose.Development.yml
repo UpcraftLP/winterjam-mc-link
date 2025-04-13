@@ -1,11 +1,18 @@
 services:
   db:
-    image: postgres:16-alpine
+    image: postgres:17-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      start_period: 20s
+      interval: 30s
+      retries: 5
+      timeout: 5s
     ports:
       - "5432:5432"
     environment:
+      POSTGRES_DB: winterjam
       POSTGRES_USER: winterjam
-      POSTGRES_PASSWORD: 493005d5-ca1d-48c9-b19b-039cf5797506
-      POSTGRES_DB: winterjam-mc-link
+      POSTGRES_PASSWORD: b55826c5-2273-4130-82b8-0116eeef045a
     volumes:
       - ./.data/postgres:/var/lib/postgresql/data
