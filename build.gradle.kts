@@ -6,7 +6,7 @@ plugins {
 	alias(libs.plugins.kotlin.jvm)
 	alias(libs.plugins.kotlin.serialization)
 
-	alias(libs.plugins.detekt)
+//	alias(libs.plugins.detekt)
 
 	alias(libs.plugins.kordex.plugin)
 }
@@ -19,7 +19,7 @@ version = System.getenv("VERSION") ?: "1.0.0-SNAPSHOT"
 println("Building ${project.name} version ${project.version}")
 
 dependencies {
-	detektPlugins(libs.detekt)
+//	detektPlugins(libs.detekt)
 
 	implementation(libs.kotlin.stdlib)
 	implementation(libs.kx.datetime)
@@ -73,11 +73,11 @@ kordEx {
 	module("web-backend")
 }
 
-detekt {
-	buildUponDefaultConfig = true
-
-	config.from(rootProject.files("detekt.yml"))
-}
+//detekt {
+//	buildUponDefaultConfig = true
+//
+//	config.from(rootProject.files("detekt.yml"))
+//}
 
 kotlin {
 	jvmToolchain {
