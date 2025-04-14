@@ -105,7 +105,7 @@ class WhitelistEntryRepository(private val database: Database) {
 					UserInfo(
 						uuid.toKotlinUuid(),
 						Snowflake(it.discordUser.id.value),
-						false,
+						null,
 						access = !it.minecraftUser.isBanned()
 					)
 				}
@@ -124,7 +124,7 @@ class WhitelistEntryRepository(private val database: Database) {
 				.map { UserInfo(
 					it.minecraftUser.id.value.toKotlinUuid(),
 					Snowflake(it.discordUser.id.value),
-					false,
+					null,
 					access = !it.minecraftUser.isBanned()
 				) }
 		}
