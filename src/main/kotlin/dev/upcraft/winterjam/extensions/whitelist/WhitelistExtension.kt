@@ -163,7 +163,11 @@ class WhitelistExtension : Extension() {
 			}
 
 			action {
-				discordUsers.getUser(event.user.id)?.leaveGuild(event.guildId)
+				discordUsers.getUser(event.user.id)?.let {
+					transaction {
+						it.leaveGuild(event.guildId)
+					}
+				}
 			}
 		}
 
@@ -173,7 +177,11 @@ class WhitelistExtension : Extension() {
 			}
 
 			action {
-				discordUsers.getUser(event.user.id)?.leaveGuild(event.guildId)
+				discordUsers.getUser(event.user.id)?.let {
+					transaction {
+						it.leaveGuild(event.guildId)
+					}
+				}
 			}
 		}
 	}
