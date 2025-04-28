@@ -16,6 +16,7 @@ import org.jetbrains.exposed.dao.with
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.kotlin.datetime.CurrentTimestamp
 import org.jetbrains.exposed.sql.kotlin.datetime.timestamp
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.transactions.transaction
 
 object DiscordGuilds : ULongIdTable("discord_guilds") {
@@ -67,7 +68,9 @@ class DiscordGuild(id: EntityID<ULong>) : ULongEntity(id) {
 	var updatedAt by DiscordGuilds.updatedAt
 
 	suspend fun forEachUser(block: suspend (DiscordUser) -> Unit) {
-		users.forEach { block(it) }
+		newSuspendedTransaction {
+			users.forEach { block(it) }
+		}
 	}
 
 	fun update(block: DiscordGuild.() -> Unit) {

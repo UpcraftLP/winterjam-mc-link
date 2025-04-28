@@ -18,6 +18,7 @@ import dev.kordex.core.extensions.ephemeralSlashCommand
 import dev.kordex.core.extensions.event
 import dev.kordex.core.i18n.withContext
 import dev.kordex.core.utils.envOf
+import dev.kordex.core.utils.envOrNull
 import dev.kordex.core.utils.scheduling.Scheduler
 import dev.upcraft.winterjam.i18n.Translations
 import dev.upcraft.winterjam.model.DiscordUserRepository
@@ -45,6 +46,7 @@ class WhitelistExtension : Extension() {
 	private val scheduler = Scheduler()
 
 	private val notificationChannelId: Snowflake = envOf<Snowflake>("WHITELIST_NOTIFICATION_CHANNEL")
+	private val operatorRoleIds: List<Snowflake> = envOrNull("SERVER_OPERATOR_ROLE_IDS")?.split(",")?.map { Snowflake(it) } ?: emptyList()
 
 	override suspend fun setup() {
 		PlayerDbService.init()
@@ -148,9 +150,7 @@ class WhitelistExtension : Extension() {
 				kord.getGuildOrNull(Snowflake(dbGuild.id.value))?.also { guild ->
 					dbGuild.forEachUser { dbUser ->
 						if(guild.getMemberOrNull(Snowflake(dbUser.id.value)) == null) {
-							transaction {
-								dbUser.leaveGuild(dbGuild)
-							}
+							dbUser.leaveGuild(dbGuild)
 						}
 					}
 				} ?: discordUsers.deleteGuild(dbGuild)
